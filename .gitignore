@@ -1,3 +1,4 @@
 
 .idea
 models/best-model.pt
+api/models/best-model.pt
