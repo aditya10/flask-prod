@@ -2,3 +2,4 @@
 .idea
 models/best-model.pt
 *.pyc
+*.log
