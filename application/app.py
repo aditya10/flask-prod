@@ -5,26 +5,27 @@ from flair.data import Sentence
 import json
 import heapq
 
-application = Flask(__name__)
+app = Flask(__name__)
 
-classifier_sentiment = TextClassifier.load('./models/best-model.pt')
+classifier_sentiment = TextClassifier.load('models/best-model.pt')
 
-@application.route("/")
+
+@app.route("/")
 def hello():
     return "Hello World!"
 
-@application.route('/classify', methods=['POST'])
+
+@app.route('/classify', methods=['POST'])
 def post_tasks():
     return_object = []
     data = json.loads(request.data)
     df = pd.DataFrame(data)
     items = TextList.from_df(df[['sample']])
-    learn = load_learner('./models', 'export.pkl', test=items)
+    learn = load_learner('models', 'export.pkl', test=items)
     preds = learn.get_preds(ds_type=DatasetType.Test)[0].tolist()
     preds = [get_classes(item) for item in preds]
     for indx, sample in enumerate(data, start=0):
         sample["categories"] = preds[indx]
-        print(sample)
         return_object.append(sample)
     return jsonify(return_object)
 
@@ -45,7 +46,8 @@ def get_classes(arr):
             ret.append([classes[index]][0])
     return ret
 
-@application.route('/get_sentiment', methods=['POST'])
+
+@app.route('/get_sentiment', methods=['POST'])
 def sentiment_task():
     return_object = []
     data = json.loads(request.data)
@@ -56,5 +58,6 @@ def sentiment_task():
         return_object.append(sample)
     return jsonify(return_object)
 
+
 if __name__ == '__main__':
-    application.run(host='0.0.0.0')
+    app.run(host='0.0.0.0')
